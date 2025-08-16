@@ -1,3 +1,5 @@
+# Ignore release checklist if not needed in repo
+PUBLIC_RELEASE_CHECKLIST.md
 # Ignore VS Code settings
 .vscode/
 
@@ -15,5 +17,3 @@ Thumbs.db
 *.swp
 *.swo
 
-# Ignore release checklist if not needed in repo
-PUBLIC_RELEASE_CHECKLIST.md
