@@ -1,0 +1,45 @@
+name: Auto Branch on Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+
+      - name: Determine branch type and name
+        id: branch
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          # Extract Jira key if present (e.g., ABC-123)
+          JIRA_KEY=$(echo "$ISSUE_TITLE" | grep -oE '[A-Z]+-[0-9]+' | head -n1)
+          # Default to 'feature' unless 'bug' or 'chore' label is present
+          BRANCH_TYPE="feature"
+          for label in "${{ toJson(github.event.issue.labels) }}"; do
+            if [[ $label == *bug* ]]; then BRANCH_TYPE="bugfix"; fi
+            if [[ $label == *chore* ]]; then BRANCH_TYPE="chore"; fi
+          done
+          # Sanitize title for branch name
+          SAFE_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+          # Compose branch name
+          if [ -n "$JIRA_KEY" ]; then
+            BRANCH_NAME="$BRANCH_TYPE/$JIRA_KEY-$SAFE_TITLE"
+          else
+            BRANCH_NAME="$BRANCH_TYPE/issue-$ISSUE_NUMBER-$SAFE_TITLE"
+          fi
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create and push branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin
+          git checkout -b "${{ steps.branch.outputs.branch_name }}" origin/main
+          git push origin "${{ steps.branch.outputs.branch_name }}"

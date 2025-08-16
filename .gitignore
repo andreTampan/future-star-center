@@ -1,0 +1,19 @@
+# Ignore VS Code settings
+.vscode/
+
+# Ignore top-level build artifacts
+/build/
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore any other editor/project files
+*.swp
+*.swo
+
+# Ignore release checklist if not needed in repo
+PUBLIC_RELEASE_CHECKLIST.md
