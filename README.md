@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white" alt="Go version" />
   <img src="https://img.shields.io/badge/Flutter-3.16+-02569B?logo=flutter&logoColor=white" alt="Flutter version" />
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
-  <img src="https://img.shields.io/github/workflow/status/andreTampan/future-star-center/Auto%20Branch%20on%20Issue?label=Auto%20Branch%20Workflow" alt="GitHub Actions" />
+  <img src="https://img.shields.io/github/actions/workflow/status/andreTampan/future-star-center/auto-branch.yml?branch=main" alt="GitHub Actions" />
 </div>
 
 # 🌟 Future Star Center Admin System
