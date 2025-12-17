@@ -7,33 +7,33 @@ class ApiResponse<T> {
 
   ApiResponse({
     required this.success,
-    required this.message,
+    required String message,
     this.data,
     this.errors,
     required this.statusCode,
-  });
+  }) : message = message.toString();
 
   factory ApiResponse.success({
-    required String message,
+    required dynamic message,
     T? data,
     int statusCode = 200,
   }) {
     return ApiResponse<T>(
       success: true,
-      message: message,
+      message: message.toString(),
       data: data,
       statusCode: statusCode,
     );
   }
 
   factory ApiResponse.error({
-    required String message,
+    required dynamic message,
     Map<String, dynamic>? errors,
     int statusCode = 400,
   }) {
     return ApiResponse<T>(
       success: false,
-      message: message,
+      message: message.toString(),
       errors: errors,
       statusCode: statusCode,
     );
@@ -45,7 +45,7 @@ class ApiResponse<T> {
   ) {
     return ApiResponse<T>(
       success: json['success'] ?? false,
-      message: json['message'] ?? '',
+      message: (json['message'] ?? '').toString(),
       data: json['data'] != null && fromJsonT != null
           ? fromJsonT(json['data'])
           : json['data'],

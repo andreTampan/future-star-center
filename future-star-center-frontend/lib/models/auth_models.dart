@@ -59,7 +59,7 @@ class AuthResponse {
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
       success: json['success'] ?? false,
-      message: json['message'] ?? '',
+      message: (json['message'] ?? '').toString(),
       token: json['token'],
       sessionId: json['session_id'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
@@ -109,7 +109,7 @@ class SessionResponse {
     return SessionResponse(
       valid: json['valid'] ?? false,
       user: json['user'] != null ? User.fromJson(json['user']) : null,
-      message: json['message'],
+      message: json['message']?.toString(),
     );
   }
 }

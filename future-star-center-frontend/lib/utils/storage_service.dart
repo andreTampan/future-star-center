@@ -93,12 +93,26 @@ class StorageService {
     return await hasToken() && await hasUser();
   }
 
+  // Remember me functionality
+  Future<bool> saveRememberMe(bool remember) async {
+    return await _preferences.setBool(AppConstants.rememberMeKey, remember);
+  }
+
+  Future<bool> getRememberMe() async {
+    return _preferences.getBool(AppConstants.rememberMeKey) ?? false;
+  }
+
+  Future<bool> removeRememberMe() async {
+    return await _preferences.remove(AppConstants.rememberMeKey);
+  }
+
   // Clear all authentication data
   Future<bool> clearAuthData() async {
     final results = await Future.wait([
       removeToken(),
       removeSessionId(),
       removeUser(),
+      // Do NOT remove rememberMe here; only remove on explicit logout
     ]);
 
     return results.every((result) => result);

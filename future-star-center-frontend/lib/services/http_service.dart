@@ -156,13 +156,13 @@ class HttpService {
         }
 
         return ApiResponse.success(
-          message: jsonData['message'] ?? 'Success',
+          message: (jsonData['message'] ?? 'Success').toString(),
           data: data,
           statusCode: response.statusCode,
         );
       } else {
         return ApiResponse.error(
-          message: jsonData['message'] ?? 'Request failed',
+          message: (jsonData['message'] ?? 'Request failed').toString(),
           errors: jsonData['errors'],
           statusCode: response.statusCode,
         );

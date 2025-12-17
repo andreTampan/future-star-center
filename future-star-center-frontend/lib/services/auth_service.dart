@@ -17,6 +17,7 @@ class AuthService {
   Future<ApiResponse<AuthResponse>> login({
     required String email,
     required String password,
+    bool rememberMe = false,
   }) async {
     try {
       final request = AuthRequest.login(email: email, password: password);
@@ -30,17 +31,22 @@ class AuthService {
       if (response.isSuccess && response.data != null) {
         final authResponse = AuthResponse.fromJson(response.data!);
 
-        // Save authentication data
-        if (authResponse.token != null) {
-          await _storageService.saveToken(authResponse.token!);
-        }
+        // Save remember me preference
+        await _storageService.saveRememberMe(rememberMe);
 
-        if (authResponse.sessionId != null) {
-          await _storageService.saveSessionId(authResponse.sessionId!);
-        }
+        // Only save authentication data if remember me is checked
+        if (rememberMe) {
+          if (authResponse.token != null) {
+            await _storageService.saveToken(authResponse.token!);
+          }
 
-        if (authResponse.user != null) {
-          await _storageService.saveUser(authResponse.user!);
+          if (authResponse.sessionId != null) {
+            await _storageService.saveSessionId(authResponse.sessionId!);
+          }
+
+          if (authResponse.user != null) {
+            await _storageService.saveUser(authResponse.user!);
+          }
         }
 
         return ApiResponse.success(
@@ -130,6 +136,7 @@ class AuthService {
 
       // Clear local authentication data regardless of server response
       await _storageService.clearAuthData();
+      await _storageService.removeRememberMe();
 
       if (response.isSuccess) {
         return ApiResponse.success(
@@ -145,6 +152,7 @@ class AuthService {
     } catch (e) {
       // Still clear local data even if request fails
       await _storageService.clearAuthData();
+      await _storageService.removeRememberMe();
 
       return ApiResponse.error(
         message: 'Logout failed: ${e.toString()}',
@@ -272,6 +280,11 @@ class AuthService {
   // Get current token
   Future<String?> getToken() async {
     return await _storageService.getToken();
+  }
+
+  // Get remember me status
+  Future<bool> getRememberMe() async {
+    return await _storageService.getRememberMe();
   }
 
   // Clear all authentication data

@@ -23,45 +23,69 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated =>
       _state == AuthState.authenticated && _user != null;
 
+  // Get remember me status
+  Future<bool> getRememberMe() async {
+    return await _authRepository.getRememberMe();
+  }
+
   // Initialize authentication state
   Future<void> initialize() async {
-    _setLoading(true);
+    // Set loading state without notifying immediately to avoid build-time issues
+    _isLoading = true;
 
     try {
-      final isLoggedIn = await _authRepository.isLoggedIn();
+      // Only check for persistent login if remember me was enabled
+      final rememberMe = await _authRepository.getRememberMe();
+      print('[DEBUG] Remember Me value on init: $rememberMe');
+      if (rememberMe) {
+        final isLoggedIn = await _authRepository.isLoggedIn();
 
-      if (isLoggedIn) {
-        // Check if session is still valid
-        final sessionResponse = await _authRepository.checkSession();
+        if (isLoggedIn) {
+          // Check if session is still valid
+          final sessionResponse = await _authRepository.checkSession();
 
-        if (sessionResponse.isSuccess &&
-            sessionResponse.data != null &&
-            sessionResponse.data!.valid) {
-          _user = sessionResponse.data!.user;
-          _setState(AuthState.authenticated);
+          if (sessionResponse.isSuccess &&
+              sessionResponse.data != null &&
+              sessionResponse.data!.valid) {
+            _user = sessionResponse.data!.user;
+            _state = AuthState.authenticated;
+          } else {
+            await _authRepository.clearAuthData();
+            _state = AuthState.unauthenticated;
+          }
         } else {
-          await _authRepository.clearAuthData();
-          _setState(AuthState.unauthenticated);
+          _state = AuthState.unauthenticated;
         }
       } else {
-        _setState(AuthState.unauthenticated);
+        // Clear any existing auth data if remember me is disabled
+        await _authRepository.clearAuthData();
+        _state = AuthState.unauthenticated;
       }
     } catch (e) {
-      _setError('Failed to initialize authentication: ${e.toString()}');
+      _errorMessage = 'Failed to initialize authentication: ${e.toString()}';
+      _state = AuthState.error;
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      // Single notification at the end to avoid multiple rebuilds
+      notifyListeners();
     }
   }
 
   // Login
-  Future<bool> login({required String email, required String password}) async {
+  Future<bool> login({
+    required String email,
+    required String password,
+    bool rememberMe = false,
+  }) async {
     _setLoading(true);
     _clearError();
 
     try {
+      print('[DEBUG] Remember Me value on login: $rememberMe');
       final response = await _authRepository.login(
         email: email,
         password: password,
+        rememberMe: rememberMe,
       );
 
       if (response.isSuccess && response.data != null) {
