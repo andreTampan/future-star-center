@@ -31,12 +31,16 @@ class User {
       lastName: json['last_name'] ?? '',
       role: json['role'] ?? '',
       isActive: json['is_active'] ?? true,
-      createdAt: DateTime.parse(
-        json['created_at'] ?? DateTime.now().toIso8601String(),
-      ),
-      updatedAt: DateTime.parse(
-        json['updated_at'] ?? DateTime.now().toIso8601String(),
-      ),
+      createdAt: json['created_at'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
+          : DateTime.parse(
+              json['created_at'] ?? DateTime.now().toIso8601String(),
+            ),
+      updatedAt: json['updated_at'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(json['updated_at'] * 1000)
+          : DateTime.parse(
+              json['updated_at'] ?? DateTime.now().toIso8601String(),
+            ),
     );
   }
 

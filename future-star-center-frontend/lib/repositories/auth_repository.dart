@@ -7,6 +7,7 @@ abstract class AuthRepository {
   Future<ApiResponse<AuthResponse>> login({
     required String email,
     required String password,
+    bool rememberMe = false,
   });
 
   Future<ApiResponse<AuthResponse>> register({
@@ -30,6 +31,7 @@ abstract class AuthRepository {
   Future<User?> getCurrentUser();
   Future<bool> isLoggedIn();
   Future<String?> getToken();
+  Future<bool> getRememberMe();
   Future<void> clearAuthData();
 }
 
@@ -43,8 +45,13 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<ApiResponse<AuthResponse>> login({
     required String email,
     required String password,
+    bool rememberMe = false,
   }) async {
-    return await _authService.login(email: email, password: password);
+    return await _authService.login(
+      email: email,
+      password: password,
+      rememberMe: rememberMe,
+    );
   }
 
   @override
@@ -103,6 +110,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<String?> getToken() async {
     return await _authService.getToken();
+  }
+
+  @override
+  Future<bool> getRememberMe() async {
+    return await _authService.getRememberMe();
   }
 
   @override

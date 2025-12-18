@@ -211,6 +211,7 @@ func (h *AuthHandler) GetSession(c echo.Context) error {
 	return c.JSON(http.StatusOK, SuccessResponse{
 		Message: "Session valid",
 		Data: map[string]interface{}{
+			"valid":   true,
 			"session": session,
 			"user":    service.ToUserResponse(user),
 		},

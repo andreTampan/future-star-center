@@ -222,6 +222,7 @@ func (s *authService) GetSession(ctx context.Context, sessionID string) (*domain
 
 func (s *authService) ValidateSession(ctx context.Context, sessionID string) (*domain.User, error) {
 	// Get session
+	println("[DEBUG] Validating session:", sessionID)
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {
 		return nil, err

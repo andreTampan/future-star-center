@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   // API Configuration
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = 'http://10.42.0.1:8080';
   static const String apiVersion = '/api';
   static const String authEndpoint = '$apiVersion/auth';
 
@@ -23,6 +23,7 @@ class AppConstants {
   static const String tokenKey = 'auth_token';
   static const String userKey = 'user_data';
   static const String sessionKey = 'session_id';
+  static const String rememberMeKey = 'remember_me';
 
   // Theme Colors (extracted from logo)
   static const Color primaryColor = Color(0xFF2E7D8A); // Teal blue from logo

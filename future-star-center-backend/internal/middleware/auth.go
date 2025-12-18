@@ -89,16 +89,16 @@ func RoleMiddleware(allowedRoles ...string) echo.MiddlewareFunc {
 
 // getSessionID extracts session ID from various sources
 func getSessionID(c echo.Context) string {
-	// 1. Check Authorization header (Bearer token style)
-	auth := c.Request().Header.Get("Authorization")
-	if auth != "" && strings.HasPrefix(auth, "Bearer ") {
-		return strings.TrimPrefix(auth, "Bearer ")
-	}
-
-	// 2. Check X-Session-ID header
+	// 1. Check X-Session-ID header
 	sessionID := c.Request().Header.Get("X-Session-ID")
 	if sessionID != "" {
 		return sessionID
+	}
+
+	// 2. Check Authorization header (Bearer token style)
+	auth := c.Request().Header.Get("Authorization")
+	if auth != "" && strings.HasPrefix(auth, "Bearer ") {
+		return strings.TrimPrefix(auth, "Bearer ")
 	}
 
 	// 3. Check session_id cookie

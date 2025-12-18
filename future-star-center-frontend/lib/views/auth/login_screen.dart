@@ -27,6 +27,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMe();
+  }
+
+  Future<void> _loadRememberMe() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final rememberMe = await authProvider.getRememberMe();
+    setState(() {
+      _rememberMe = rememberMe;
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -45,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await authProvider.login(
       email: _emailController.text.trim(),
       password: _passwordController.text,
+      rememberMe: _rememberMe,
     );
 
     if (success && mounted) {

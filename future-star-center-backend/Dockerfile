@@ -1,14 +1,13 @@
-# Build stage - using latest Go with Debian
-FROM golang:bullseye AS builder
+# Build stage - using Alpine for minimal vulnerabilities
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Install only essential build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Update packages to fix vulnerabilities and install essential build dependencies
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache \
     ca-certificates \
-    git \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    git
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
