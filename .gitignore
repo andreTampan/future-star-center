@@ -17,3 +17,6 @@ Thumbs.db
 *.swp
 *.swo
 
+# Ignore Go debug binaries
+__debug_bin*
+
