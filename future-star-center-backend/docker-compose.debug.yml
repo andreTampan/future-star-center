@@ -1,0 +1,44 @@
+services:
+
+  backend-debug:
+    build:
+      context: ./future-star-center-backend
+      dockerfile: .devcontainer/Dockerfile
+    container_name: fsc-backend-debug
+    command: dlv debug --headless --listen=:40000 --api-version=2 --accept-multiclient --log --continue -- "${GO_ARGS:-}"
+    ports:
+      - "8080:8080"
+      - "40000:40000"
+    volumes:
+      - ./future-star-center-backend:/workspace:cached
+    env_file:
+      - ./future-star-center-backend/.env
+    working_dir: /workspace
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:latest
+    container_name: fsc-mongo-debug
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: fsc-redis-debug
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:

@@ -23,7 +23,10 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _setupAnimations();
-    _initializeApp();
+    // Defer initialization until after the build phase completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeApp();
+    });
   }
 
   void _setupAnimations() {
@@ -46,14 +49,26 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initializeApp() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // Add minimum splash screen duration for better UX
-    await Future.wait([
-      authProvider.initialize(),
-      Future.delayed(const Duration(seconds: 2)), // Minimum 2 seconds
-    ]);
+    // Optimize timing to reduce main thread pressure
+    try {
+      // Initialize auth with optimized timing
+      await Future.wait([
+        authProvider.initialize(),
+        Future.delayed(
+          const Duration(milliseconds: 1500),
+        ), // Reduced to 1.5s for better performance
+      ]);
 
-    if (mounted) {
-      _navigateToNextScreen();
+      if (mounted) {
+        // Add a small delay to ensure smooth transition
+        await Future.delayed(const Duration(milliseconds: 300));
+        _navigateToNextScreen();
+      }
+    } catch (e) {
+      // Handle any initialization errors gracefully
+      if (mounted) {
+        _navigateToNextScreen();
+      }
     }
   }
 
